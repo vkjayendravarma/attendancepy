@@ -47,8 +47,9 @@ def uploadimage():
     return {"filename": filename}  #return filename as response 
     
     
-# @app.route("process_images/:images", methods=["POST"])
-# def process_images():
+@app.route("process_images/:images", methods=["POST"])
+def process_images():
+    
     
 
 # Server options 
