@@ -1,5 +1,5 @@
 #imports to handle local files 
-import os
+import os, errno
 
 #imports to handle server 
 from flask import Flask, request, render_template
@@ -9,12 +9,16 @@ from flask import Flask, request, render_template
 app = Flask(__name__)
 
 # APP configs
-app.config["IMAGES_TO_IDENTIFY"] = "static/images"
+app.config["IMAGES_TO_IDENTIFY"] = "static/processimages"
 app.config["IMAGE_ID"] = 0
 
 # Directory setup
-if not os.path.exists(app.root_path + app.config["IMAGES_TO_IDENTIFY"] ):
-    os.mkdir(app.config["IMAGES_TO_IDENTIFY"])
+storage_location = app.root_path + "/" + app.config["IMAGES_TO_IDENTIFY"] 
+try:
+    os.makedirs(storage_location)
+except OSError as e:
+    if e.errno != errno.EEXIST:
+        raise
 
 # Index route
 @app.route("/")
