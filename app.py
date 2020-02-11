@@ -8,6 +8,7 @@ from flask import Flask, request, render_template
 #init flask
 app = Flask(__name__)
 
+
 # APP configs
 app.config["IMAGES_TO_IDENTIFY"] = "static/processimages"
 app.config["IMAGE_ID"] = 0
@@ -47,9 +48,9 @@ def uploadimage():
     return {"filename": filename}  #return filename as response 
     
     
-@app.route("process_images/:images", methods=["POST"])
-def process_images():
-    
+# @app.route("process_images", methods=["POST"])
+# def process_images():
+#     return "hello"
     
 
 # Server options 
