@@ -4,14 +4,17 @@ import os, errno
 #imports to handle server 
 from flask import Flask, request, render_template
 
+# Local imports
+import appcongif
+import brain
 
 #init flask
 app = Flask(__name__)
 
 
 # APP configs
-app.config["IMAGES_TO_IDENTIFY"] = "static/processimages"
-app.config["IMAGE_ID"] = 0
+app.config["IMAGES_TO_IDENTIFY"] = appcongif.IMAGES_TO_IDENTIFY
+app.config["IMAGE_ID"] = appcongif.IMAGE_ID
 
 # Directory setup
 storage_location = app.root_path + "/" + app.config["IMAGES_TO_IDENTIFY"] 
@@ -48,9 +51,17 @@ def uploadimage():
     return {"filename": filename}  #return filename as response 
     
     
-# @app.route("process_images", methods=["POST"])
-# def process_images():
-#     return "hello"
+@app.route("/process_images", methods=["POST"])
+def process_images():
+    data = request.get_json()
+    
+    imageList = data["img"]
+    
+    brain.pull(imageList)   
+    
+    return data
+
+    
     
 
 # Server options 

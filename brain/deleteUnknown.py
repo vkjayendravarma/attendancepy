@@ -1,5 +1,5 @@
 import os, shutil
-folder = 'unknown/'
+folder = '../static/unknown/'
 def deleteImages():
         for filename in os.listdir(folder):
             file_path = os.path.join(folder, filename)

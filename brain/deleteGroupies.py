@@ -1,6 +1,6 @@
 import os
 import shutil
-folder = 'static/processimages/'
+folder = '../static/processimages/'
 
 
 def deleteImages():
