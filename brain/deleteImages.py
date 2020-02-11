@@ -1,10 +1,10 @@
 import os
 import shutil
-folder = '../static/processimages/'
 
 
-def deleteImages():
-    for filename in os.listdir(folder):
+
+def deleteImages(folder, image_list):
+    for filename in image_list:
         file_path = os.path.join(folder, filename)
         try:
             if os.path.isfile(file_path) or os.path.islink(file_path):

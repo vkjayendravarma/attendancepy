@@ -1,5 +1,6 @@
 .vscode
 env/
-static
+static/processimages
+static/unknown
 
 *__pycache__

@@ -60,6 +60,8 @@ def process_images():
     brain.pull(imageList)   
     
     return data
+    
+    
 
     
     
