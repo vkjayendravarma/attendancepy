@@ -57,9 +57,9 @@ def process_images():
     
     imageList = data["img"]
     
-    brain.pull(imageList)   
+    identified = brain.pull(imageList)   
     
-    return data
+    return identified
     
 
     
