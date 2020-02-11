@@ -38,6 +38,10 @@ def pull(imageList):
 
 
     deleteImages.deleteImages( appcongif.IMAGES_TO_IDENTIFY, imageList)
-    facematch.match(cropped_image_list)
+    attendance_list = facematch.match(cropped_image_list)
     deleteImages.deleteImages(appcongif.IMAGES_UNKNOWN, cropped_image_list)
+
+    return {"identified" : attendance_list}
+
+    
     
