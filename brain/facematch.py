@@ -16,6 +16,6 @@ def match(unknown_images):
         res = str(output).split(',')
         res[1] = str(res[1]).replace('\\n\'' ,'')
         attendance_list.append(res[1])
-        
+    print(attendance_list)  
     return (attendance_list)
 

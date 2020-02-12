@@ -36,9 +36,9 @@ def pull(imageList):
 
    
 
-    #brain.deleteImages.deleteImages( appcongif.IMAGES_TO_IDENTIFY, imageList)
-    attendance_list = facematch.match(cropped_image_list)
-    #brain.deleteImages.deleteImages(appcongif.IMAGES_UNKNOWN, cropped_image_list)
+    # brain.deleteImages.deleteImages( appcongif.IMAGES_TO_IDENTIFY, imageList)
+    attendance_list = brain.facematch.match(cropped_image_list)
+    # brain.deleteImages.deleteImages(appcongif.IMAGES_UNKNOWN, cropped_image_list)
 
     
 
