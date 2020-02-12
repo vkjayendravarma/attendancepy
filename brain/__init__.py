@@ -40,6 +40,10 @@ def pull(imageList):
     attendance_list = brain.facematch.match(cropped_image_list)
     brain.deleteImages.deleteImages(appcongif.IMAGES_UNKNOWN, cropped_image_list)
     
+  
+
+    
+
     return {"identified" : attendance_list}
 
     

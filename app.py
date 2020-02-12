@@ -4,9 +4,16 @@ import os, errno
 #imports to handle server 
 from flask import Flask, request, render_template
 
+#import database  config
+import firebase
+from datetime import date, datetime
+
 # Local imports
 import appcongif
 import brain
+
+
+
 
 #init flask
 app = Flask(__name__)
@@ -57,7 +64,13 @@ def process_images():
     
     imageList = data["img"]
     
-    identified = brain.pull(imageList)   
+    identified = brain.pull(imageList) 
+    
+    now = datetime.now()
+    current_time = now.strftime("%H:%M:%S")
+    
+    db = firebase.firebase.database()
+    db.child(date.today()).child(current_time).set(identified["identified"])
     
     return identified
     
