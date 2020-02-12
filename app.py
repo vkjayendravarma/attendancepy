@@ -7,6 +7,7 @@ from flask import Flask, request, render_template
 #import database  config
 import firebase
 from datetime import date, datetime
+import pytz
 
 # Local imports
 import appcongif
@@ -67,7 +68,9 @@ def process_images():
     identified = brain.pull(imageList) 
     
     now = datetime.now()
-    current_time = now.strftime("%H:%M:%S")
+    
+    tz = pytz.timezone('Asia/Kolkata')
+    current_time = now.astimezone(tz).strftime("%H:%M:%S")
     
     db = firebase.firebase.database()
     db.child(date.today()).child(current_time).set(identified["identified"])
