@@ -26,8 +26,22 @@ app.config["IMAGE_ID"] = appcongif.IMAGE_ID
 
 # Directory setup
 storage_location = app.root_path + "/" + app.config["IMAGES_TO_IDENTIFY"] 
+
+location = app.root_path + "/" + appcongif.IMAGES_UNKNOWN
+location1 = app.root_path + "/" + appcongif.IMAGES_UNIDENTIFIED
+
 try:
     os.makedirs(storage_location)
+except OSError as e:
+    if e.errno != errno.EEXIST:
+        raise
+try:
+    os.makedirs(location)
+except OSError as e:
+    if e.errno != errno.EEXIST:
+        raise
+try:
+    os.makedirs(location1)
 except OSError as e:
     if e.errno != errno.EEXIST:
         raise
@@ -74,6 +88,8 @@ def process_images():
     
     db = firebase.firebase.database()
     db.child(date.today()).child(current_time).set(identified["identified"])
+
+    print(identified["unidentified"])
     
     return identified
     

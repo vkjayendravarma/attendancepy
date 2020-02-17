@@ -8,12 +8,7 @@ import os , errno
 
 
 
-location = appcongif.IMAGES_UNKNOWN
-try:
-    os.makedirs(location)
-except OSError as e:
-    if e.errno != errno.EEXIST:
-        raise
+
 
 def pull(imageList):
     cropped_image_list = [] 
@@ -38,13 +33,28 @@ def pull(imageList):
 
     brain.deleteImages.deleteImages( appcongif.IMAGES_TO_IDENTIFY, imageList)
     attendance_list = brain.facematch.match(cropped_image_list)
+    return_list = []
+    unidentified_list = []
+    
+    for l in attendance_list:
+        appcongif.COUNT = appcongif.COUNT + 1
+        if(l == 'unknown_person\\r'):
+            unknown_image = appcongif.IMAGES_UNIDENTIFIED +"/" + str(appcongif.COUNT) + ".jpeg"
+            pil_image.save(unknown_image)
+            unidentified_list.append(unknown_image)
+
+        else: 
+            return_list.append(l)
+
+
+            
     brain.deleteImages.deleteImages(appcongif.IMAGES_UNKNOWN, cropped_image_list)
     
   
 
     
 
-    return {"identified" : attendance_list}
+    return {"identified" : return_list , "unidentified" : unidentified_list}
 
     
     
