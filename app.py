@@ -91,11 +91,14 @@ def process_images():
 
     print(identified["unidentified"])
     
-    return identified
-    
+    return identified["identified"]
 
+
+@app.route("/unidentified")
+def unidentified():
+    intruder = os.listdir(app.root_path +"/"+ appcongif.IMAGES_UNIDENTIFIED)    
     
-    
+    return {"intruders" : intruder}
 
 # Server options 
 if __name__ == "__main__":
