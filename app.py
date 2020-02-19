@@ -91,7 +91,7 @@ def process_images():
 
     print(identified["unidentified"])
     
-    return identified["identified"]
+    return identified
 
 
 @app.route("/unidentified")
