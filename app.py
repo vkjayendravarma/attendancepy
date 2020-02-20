@@ -97,13 +97,13 @@ def process_images():
         userRef  = db.child('users').get()
         for user in userRef.each():
             print (user.key())
-            db.child('attendance').child(dateToPost).child(sessionToPost).child(user.key()).set('0')
+            db.child('attendance').child(dateToPost).child(sessionToPost).child(user.key()).set(0)
     
     identified = brain.pull(imageList) 
     
     # Set attendace for identified 
     for id in identified['identified']:
-        db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set('1')
+        db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set(1)
 
     print(identified["unidentified"])
     
@@ -155,6 +155,41 @@ def newuser():
     
     return {"userId": res, "err": err}
     
+# get selected date and session attendance 
+@app.route("/getattendance", methods=['POST'])
+def getAttendance():
+    req = request.get_json()
+    err = None
+    date = req['date']
+    session = req['session']
+    
+    attendace = []
+    
+    print(req)
+    
+    data = db.child('attendance').child(date).child(session).get()
+    if(data.val()):
+        for record in data.each():
+            print(record.key() + ":" + str(record.val()))
+            
+            if(record.val()):
+                PorA = 'Present'
+            else: 
+                PorA = 'Absent'
+            
+            ID = record.key()        
+        
+            setRecord = {
+                'ID': ID,
+                'name': db.child("users").child(ID).get().val(),
+                'PorA': PorA            
+            }
+            attendace.append(setRecord)
+    
+    else:
+        err = 'No data available'
+        
+    return {"res": attendace, 'err': err}
 
 # Server options 
 if __name__ == "__main__":
