@@ -125,12 +125,11 @@ def unidentified():
         for record in intruderdb.each():
             data = record.val()
             setRecord = {
-                'id': data['imgID'],
+                'id': record.key(),
                 'date': data['date'],
                 'session': data['session'],
                 'imgUrl': "http://localhost:8080/static/unidentified/" + data["imgID"] + ".jpeg"
             }
-            print(data)
             res.append(setRecord)
     else:
         err = "No unidentified people" 
