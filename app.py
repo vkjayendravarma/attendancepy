@@ -25,7 +25,7 @@ cors = CORS(app, resources={
 
 
 # init DB 
-database = firebase.firebase.database()
+db = firebase.firebase.database()
 
 
 # APP configs
@@ -82,7 +82,8 @@ def uploadimage():
     
     return {"filename": filename}  #return filename as response 
     
-    
+# process and posting attendance
+  
 @app.route("/process_images", methods=["POST"])
 def process_images():
     data = request.get_json()
@@ -91,14 +92,18 @@ def process_images():
     dateToPost = data["date"]
     sessionToPost = data["session"]
     
+   # Generate session if dosent exists
+    if(db.child('attendance').child(dateToPost).child(sessionToPost).get().val() == None):
+        userRef  = db.child('users').get()
+        for user in userRef.each():
+            print (user.key())
+            db.child('attendance').child(dateToPost).child(sessionToPost).child(user.key()).set('0')
+    
     identified = brain.pull(imageList) 
     
-    dbRef = database.child(dateToPost)
-    if(dbRef.child(sessionToPost).get().val()):
-        print("yes")
-    
-      
-    # database.child(date.today()).child(current_time).set(identified["identified"])
+    # Set attendace for identified 
+    for id in identified['identified']:
+        db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set('1')
 
     print(identified["unidentified"])
     
@@ -126,7 +131,7 @@ def newuser():
     userName = request.form["userName"]
     userImg = request.files["userImg"]
     
-    
+ 
     # Changing file names
     f_name, f_ext  = os.path.splitext(userImg.filename) 
     f_name = userID           
@@ -138,13 +143,14 @@ def newuser():
     if(request.form["force_override"] == 'true'):        
         userImg.save(os.path.join(newPath))
         res = userID
+        db.child("users").child(userID).set(userName)
     else:
         if(os.path.exists(newPath)):
             err = 'file exists'
         else:
             userImg.save(os.path.join(newPath))
             res = userID
-    
+            db.child("users").child(userID).set(userName)
     
     
     return {"userId": res, "err": err}
