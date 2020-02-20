@@ -4,6 +4,7 @@ import face_recognition
 import brain.deleteImages
 import brain.facematch
 import appcongif
+import shutil
 import os , errno
 
 
@@ -38,9 +39,10 @@ def pull(imageList):
     
     for l in attendance_list:
         appcongif.COUNT = appcongif.COUNT + 1
+        
         if(l == 'unknown_person'):
             unknown_image = appcongif.IMAGES_UNIDENTIFIED +"/" + str(appcongif.COUNT) + ".jpeg"
-            pil_image.save(unknown_image)
+            shutil.copy(appcongif.IMAGES_UNKNOWN + "/" + str(appcongif.COUNT) + ".jpeg" ,unknown_image)
             unidentified_list.append(unknown_image)
 
         else: 
