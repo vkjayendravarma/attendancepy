@@ -14,9 +14,6 @@ import pytz
 import appcongif
 import brain
 
-
-
-
 #init flask
 app = Flask(__name__)
 CORS(app)
@@ -124,30 +121,34 @@ def unidentified():
 @app.route("/newuser", methods=["POST"])
 def newuser():
     err = None
+    res = None
     userID = request.form["userId"]
     userName = request.form["userName"]
-    # userImg = request.files["userImg"]
+    userImg = request.files["userImg"]
     
     
     # Changing file names
-    # f_name, f_ext  = os.path.splitext(userImg.filename) 
-    # f_name = userID           
-    # filename = f_name + f_ext
-        
-    # Save images to local directory
-    # newPath = app.root_path + "/" + app.config["IMAGES_KNOWN"] + "/" + filename
-    # if(os.path.exists(newPath)):
-    #     print("yes")
-    # userImg.save(os.path.join())
-    # print(request)
+    f_name, f_ext  = os.path.splitext(userImg.filename) 
+    f_name = userID           
+    filename = f_name + f_ext
     
-    
-    # return {"res": filename, "err": err}
-    print(userID +" "+ userName)
-    return {
-        "resp" : "yes"
-    }
+    newPath = app.root_path + "/" + app.config["IMAGES_KNOWN"] + "/" + filename
 
+    # Save images to local directory
+    if(request.form["force_override"] == 'true'):        
+        userImg.save(os.path.join(newPath))
+        res = userID
+    else:
+        if(os.path.exists(newPath)):
+            err = 'file exists'
+        else:
+            userImg.save(os.path.join(newPath))
+            res = userID
+    
+    
+    
+    return {"userId": res, "err": err}
+    
 
 # Server options 
 if __name__ == "__main__":
