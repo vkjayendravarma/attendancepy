@@ -105,16 +105,37 @@ def process_images():
     for id in identified['identified']:
         db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set(1)
 
-    print(identified["unidentified"])
+    for id in identified["unidentified"]:
+        db.child("unidentified").push({
+            "date": dateToPost,
+            "imgID": id,
+            "session": sessionToPost
+        })
     
     return identified
 
 
 @app.route("/unidentified")
 def unidentified():
-    intruder = os.listdir(app.root_path +"/"+ appcongif.IMAGES_UNIDENTIFIED)    
+    res=[]
+    err=''
+    intruderdb = db.child('unidentified').get()
     
-    return {"intruders" : intruder}
+    if(intruderdb.val()):
+        for record in intruderdb.each():
+            data = record.val()
+            setRecord = {
+                'id': data['imgID'],
+                'date': data['date'],
+                'session': data['session'],
+                'imgUrl': "http://localhost:8080/static/unidentified/" + data["imgID"] + ".jpeg"
+            }
+            print(data)
+            res.append(setRecord)
+    else:
+        err = "No unidentified people" 
+    
+    return {"res" : res,"err" : err}
 
 
 

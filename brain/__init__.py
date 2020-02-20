@@ -43,7 +43,7 @@ def pull(imageList):
         if(l == 'unknown_person'):
             unknown_image = appcongif.IMAGES_UNIDENTIFIED +"/" + str(appcongif.COUNT) + ".jpeg"
             shutil.copy(appcongif.IMAGES_UNKNOWN + "/" + str(appcongif.COUNT) + ".jpeg" ,unknown_image)
-            unidentified_list.append(unknown_image)
+            unidentified_list.append(str(appcongif.COUNT))
 
         else: 
             return_list.append(l)
