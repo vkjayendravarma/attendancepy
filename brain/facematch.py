@@ -1,7 +1,6 @@
 import subprocess
 import appcongif
 
-
 def match(unknown_images):
     attendance_list = []
     for images in unknown_images:

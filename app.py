@@ -1,5 +1,6 @@
 #imports to handle local files 
 import os, errno
+import shutil
 
 #imports to handle server 
 from flask import Flask, request, render_template
@@ -92,47 +93,70 @@ def process_images():
     dateToPost = data["date"]
     sessionToPost = data["session"]
     
+    print("1")
+    
    # Generate session if dosent exists
     if(db.child('attendance').child(dateToPost).child(sessionToPost).get().val() == None):
+        print("2")
         userRef  = db.child('users').get()
         for user in userRef.each():
             print (user.key())
             db.child('attendance').child(dateToPost).child(sessionToPost).child(user.key()).set(0)
-    
+    print("3")
     identified = brain.pull(imageList) 
-    
+    print("4")
     # Set attendace for identified 
     for id in identified['identified']:
-        db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set(1)
-
+        print("5")
+        print("img" + id)
+        # db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set(1)
+    print("6")
     for id in identified["unidentified"]:
+        print("7")
         db.child("unidentified").push({
             "date": dateToPost,
             "imgID": id,
             "session": sessionToPost
         })
     
+    print("8")    
     return identified
 
 
-@app.route("/unidentified")
+@app.route("/unidentified", methods=["GET", "POST"])
 def unidentified():
     res=[]
     err=''
     intruderdb = db.child('unidentified').get()
     
-    if(intruderdb.val()):
-        for record in intruderdb.each():
-            data = record.val()
-            setRecord = {
-                'id': record.key(),
+    if( request.method == "GET"):
+    
+        if(intruderdb.val()):
+            for record in intruderdb.each():
+                data = record.val()
+                setRecord = {
+                    'id': record.key(),
+                    'date': data['date'],
+                    'session': data['session'],
+                    'imgUrl': "http://localhost:8080/static/unidentified/" + data["imgID"] + ".jpeg"
+                }
+                res.append(setRecord)
+        else:
+            err = "No unidentified people" 
+    if(request.method == "POST"):
+        requestid = request.get_json()['id']
+        print(requestid)
+        data = db.child('unidentified').child(requestid).get().val()
+        if(data):
+            res = {
+                'id': requestid,
                 'date': data['date'],
                 'session': data['session'],
+                'imgID': data["imgID"],
                 'imgUrl': "http://localhost:8080/static/unidentified/" + data["imgID"] + ".jpeg"
             }
-            res.append(setRecord)
-    else:
-        err = "No unidentified people" 
+        else:
+            err = 'No data. Guest might be updated by someone'
     
     return {"res" : res,"err" : err}
 
@@ -140,6 +164,7 @@ def unidentified():
 
 
 # Web admin related routs 
+   
 
 
 # generate new profile
@@ -149,29 +174,38 @@ def newuser():
     res = None
     userID = request.form["userId"]
     userName = request.form["userName"]
-    userImg = request.files["userImg"]
     
- 
-    # Changing file names
-    f_name, f_ext  = os.path.splitext(userImg.filename) 
-    f_name = userID           
-    filename = f_name + f_ext
-    
-    newPath = app.root_path + "/" + app.config["IMAGES_KNOWN"] + "/" + filename
+    if(request.files): 
+        # Changing file names
+        userImg = request.files["userImg"] 
+        f_name, f_ext  = os.path.splitext(userImg.filename) 
+        f_name = userID           
+        filename = f_name + f_ext        
+        newPath = app.root_path + "/" + app.config["IMAGES_KNOWN"] + "/" + filename
 
-    # Save images to local directory
-    if(request.form["force_override"] == 'true'):        
-        userImg.save(os.path.join(newPath))
-        res = userID
-        db.child("users").child(userID).set(userName)
-    else:
-        if(os.path.exists(newPath)):
-            err = 'file exists'
-        else:
+        # Save images to local directory
+        if(request.form["force_override"] == 'true'):        
             userImg.save(os.path.join(newPath))
             res = userID
             db.child("users").child(userID).set(userName)
+        else:
+            if(os.path.exists(newPath)):
+                err = 'file exists'
+            else:
+                userImg.save(os.path.join(newPath))
+                res = userID
+                db.child("users").child(userID).set(userName)
     
+    elif (request.form["existingID"]):
+        guest = db.child("unidentified").child(request.form["existingID"]).get().val()
+        shutil.move(appcongif.IMAGES_UNIDENTIFIED + "/" + str(guest["imgID"]) + ".jpeg" ,appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg")
+        db.child("users").child(userID).set(userName)
+        db.child('attendance').child(guest["date"]).child(guest["session"]).child(userID).set(1)        
+        db.child("unidentified").child(request.form["existingID"]).remove()    
+        res = userID
+        print("Updating user")
+    else:
+        err: "No File choosen"
     
     return {"userId": res, "err": err}
     

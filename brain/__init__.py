@@ -43,20 +43,11 @@ def pull(imageList):
         if(l == 'unknown_person'):
             unknown_image = appcongif.IMAGES_UNIDENTIFIED +"/" + str(appcongif.COUNT) + ".jpeg"
             shutil.copy(appcongif.IMAGES_UNKNOWN + "/" + str(appcongif.COUNT) + ".jpeg" ,unknown_image)
-            unidentified_list.append(str(appcongif.COUNT))
+            unidentified_list.append(unknown_image)
 
         else: 
             return_list.append(l)
-
-
             
     brain.deleteImages.deleteImages(appcongif.IMAGES_UNKNOWN, cropped_image_list)
     
-  
-
-    
-
     return {"identified" : return_list , "unidentified" : unidentified_list}
-
-    
-    
