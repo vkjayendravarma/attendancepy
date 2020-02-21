@@ -128,7 +128,7 @@ def unidentified():
     res=[]
     err=''
     intruderdb = db.child('unidentified').get()
-    
+        
     if( request.method == "GET"):
     
         if(intruderdb.val()):
@@ -260,7 +260,16 @@ def getAttendance():
 
 @app.route("/delete", methods=["POST"])
 def delete():
-    
+    data = request.get_json()
+    print(data)
+    requestid = data["imgID"]
+    dbr = db.child('unidentified').child(requestid).get().val()
+    imref = dbr["imgID"]
+    pathref = app.root_path + "/" + appcongif.IMAGES_UNIDENTIFIED + "/" + imref + ".jpeg"
+    os.remove(pathref)
+    db.child('unidentified').child(requestid).remove()  
+    res = True             
+    return {"res" : res}
 
 # Server options 
 if __name__ == "__main__":
