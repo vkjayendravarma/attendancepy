@@ -108,8 +108,8 @@ def process_images():
     # Set attendace for identified 
     for id in identified['identified']:
         print("5")
-        print("img" + id)
-        # db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set(1)
+        print(id)
+        db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set(1)
     print("6")
     for id in identified["unidentified"]:
         print("7")
@@ -197,11 +197,24 @@ def newuser():
                 db.child("users").child(userID).set(userName)
     
     elif (request.form["existingID"]):
+        newfile = appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg"        
         guest = db.child("unidentified").child(request.form["existingID"]).get().val()
-        shutil.move(appcongif.IMAGES_UNIDENTIFIED + "/" + str(guest["imgID"]) + ".jpeg" ,appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg")
-        db.child("users").child(userID).set(userName)
-        db.child('attendance').child(guest["date"]).child(guest["session"]).child(userID).set(1)        
-        db.child("unidentified").child(request.form["existingID"]).remove()    
+        
+        if(request.form["force_override"] == 'true'):        
+            shutil.move(appcongif.IMAGES_UNIDENTIFIED + "/" + str(guest["imgID"]) + ".jpeg" ,appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg")
+            db.child("users").child(userID).set(userName)
+            db.child('attendance').child(guest["date"]).child(guest["session"]).child(userID).set(1)        
+            db.child("unidentified").child(request.form["existingID"]).remove()  
+        else:
+            if(os.path.exists(newfile)):
+                err = 'file exists'
+            else:
+                shutil.move(appcongif.IMAGES_UNIDENTIFIED + "/" + str(guest["imgID"]) + ".jpeg" ,appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg")
+                db.child("users").child(userID).set(userName)
+                db.child('attendance').child(guest["date"]).child(guest["session"]).child(userID).set(1)        
+                db.child("unidentified").child(request.form["existingID"]).remove()  
+        
+          
         res = userID
         print("Updating user")
     else:
@@ -244,6 +257,10 @@ def getAttendance():
         err = 'No data available'
         
     return {"res": attendace, 'err': err}
+
+@app.route("/delete", methods=["POST"])
+def delete():
+    
 
 # Server options 
 if __name__ == "__main__":

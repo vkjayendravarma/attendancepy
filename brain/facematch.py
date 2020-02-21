@@ -10,10 +10,11 @@ def match(unknown_images):
     #     res[1] = str(res[1]).replace('\\r\\n\'' ,'')
     #     attendance_list.append(res[1])
     # return (attendance_list)
-        data = subprocess.Popen('face_recognition --tolerance 0.5 --cpus 8 ' + appcongif.IMAGES_KNOWN + " " + appcongif.IMAGES_UNKNOWN + "/" + images ,shell = True, stdout = subprocess.PIPE)
+        data = subprocess.Popen('face_recognition --tolerance 0.48 ' + appcongif.IMAGES_KNOWN + " " + appcongif.IMAGES_UNKNOWN + "/" + images ,shell = True, stdout = subprocess.PIPE)
         output = data.communicate()
         res = str(output).split(',')
         res[1] = str(res[1]).replace('\\n\'' ,'')
         attendance_list.append(res[1])
+        print(str(output))
     return (attendance_list)
 
