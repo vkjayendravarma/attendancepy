@@ -138,7 +138,7 @@ def unidentified():
                     'id': record.key(),
                     'date': data['date'],
                     'session': data['session'],
-                    'imgUrl': "http://localhost:8080/static/unidentified/" + data["imgID"] + ".jpeg"
+                    'imgUrl': "http://attendancepy.herokuapp.com/static/unidentified/" + data["imgID"] + ".jpeg"
                 }
                 res.append(setRecord)
         else:
@@ -153,7 +153,7 @@ def unidentified():
                 'date': data['date'],
                 'session': data['session'],
                 'imgID': data["imgID"],
-                'imgUrl': "http://localhost:8080/static/unidentified/" + data["imgID"] + ".jpeg"
+                'imgUrl': "http://attendancepy.herokuapp.com/static/unidentified/" + data["imgID"] + ".jpeg"
             }
         else:
             err = 'No data. Guest might be updated by someone'
