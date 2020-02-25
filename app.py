@@ -93,33 +93,24 @@ def process_images():
     dateToPost = data["date"]
     sessionToPost = data["session"]
     
-    print("1")
     
    # Generate session if dosent exists
     if(db.child('attendance').child(dateToPost).child(sessionToPost).get().val() == None):
-        print("2")
         userRef  = db.child('users').get()
         for user in userRef.each():
             print (user.key())
             db.child('attendance').child(dateToPost).child(sessionToPost).child(user.key()).set(0)
-    print("3")
     identified = brain.pull(imageList) 
-    print("4")
     # Set attendace for identified 
     for id in identified['identified']:
-        print("5")
-        print(id)
         db.child('attendance').child(dateToPost).child(sessionToPost).child(id).set(1)
-    print("6")
     for id in identified["unidentified"]:
-        print("7")
         db.child("unidentified").push({
             "date": dateToPost,
             "imgID": id,
             "session": sessionToPost
         })
-    
-    print("8")    
+       
     return identified
 
 
@@ -128,7 +119,8 @@ def unidentified():
     res=[]
     err=''
     intruderdb = db.child('unidentified').get()
-        
+    
+    #get all unidentified people
     if( request.method == "GET"):
     
         if(intruderdb.val()):
@@ -138,11 +130,13 @@ def unidentified():
                     'id': record.key(),
                     'date': data['date'],
                     'session': data['session'],
-                    'imgUrl': "http://attendancepy.herokuapp.com/static/unidentified/" + data["imgID"] + ".jpeg"
+                    'imgUrl': "http://localhost:8080/static/unidentified/" + data["imgID"] + ".jpeg"
                 }
                 res.append(setRecord)
         else:
             err = "No unidentified people" 
+            
+    # send data for updating unidentified person to known 
     if(request.method == "POST"):
         requestid = request.get_json()['id']
         print(requestid)
@@ -153,7 +147,7 @@ def unidentified():
                 'date': data['date'],
                 'session': data['session'],
                 'imgID': data["imgID"],
-                'imgUrl': "http://attendancepy.herokuapp.com/static/unidentified/" + data["imgID"] + ".jpeg"
+                'imgUrl': "http://localhost:8080/static/unidentified/" + data["imgID"] + ".jpeg"
             }
         else:
             err = 'No data. Guest might be updated by someone'
@@ -196,6 +190,7 @@ def newuser():
                 res = userID
                 db.child("users").child(userID).set(userName)
     
+    # If it is to update unidentified peson 
     elif (request.form["existingID"]):
         newfile = appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg"        
         guest = db.child("unidentified").child(request.form["existingID"]).get().val()
@@ -258,6 +253,7 @@ def getAttendance():
         
     return {"res": attendace, 'err': err}
 
+# Delete unidentified person
 @app.route("/delete", methods=["POST"])
 def delete():
     data = request.get_json()
