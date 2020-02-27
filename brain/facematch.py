@@ -2,9 +2,12 @@ import appcongif
 import face_recognition
 import os
 import pickle
-
+import shutil
+flag = 0
 def match(unknown_images):
     attendance_list = []
+    unidentified_list = []
+    flag = 0
     with open(appcongif.IMAGE_ENCODINGS + "/keyvalues.json"  , 'rb') as fp1:
         keyvalues1 = pickle.load(fp1)
     for images in unknown_images:
@@ -18,9 +21,14 @@ def match(unknown_images):
                 res = str(filename).split('.')
                 attendance_list.append(res[0])
                 print(filename + ' ' + images)
+                flag = 1
                 break
+        if (flag==0):
+            shutil.copy(appcongif.IMAGES_UNKNOWN + "/" + images  ,appcongif.IMAGES_UNIDENTIFIED + "/" + images)
+            unidentified_list.append(images)
+        flag = 0
     
     # print(attendance_list)
-    return (attendance_list)
+    return {"identified" : attendance_list , "unidentified" : unidentified_list}
         
 

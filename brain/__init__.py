@@ -46,7 +46,7 @@ def pull(imageList):
 
     
     # return " "
-    return {"identified" : attendance_list}
+    return  attendance_list
 
     
     
