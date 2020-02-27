@@ -84,6 +84,12 @@ def uploadimage():
     return {"filename": filename}  #return filename as response 
     
 # process and posting attendance
+
+@app.route("/encodings", methods=["GET"])
+def encodings():
+    brain.know_face_encodings.en()
+    
+    return {"res": "file created"}
   
 @app.route("/process_images", methods=["POST"])
 def process_images():
@@ -151,6 +157,8 @@ def unidentified():
             }
         else:
             err = 'No data. Guest might be updated by someone'
+    # db = firebase.firebase.database()
+    # db.child(date.today()).child(current_time).set(identified["identified"])
     
     return {"res" : res,"err" : err}
 
