@@ -69,8 +69,8 @@ def process_images():
     now = datetime.now()
     current_time = now.strftime("%H:%M:%S")
     
-    db = firebase.firebase.database()
-    db.child(date.today()).child(current_time).set(identified["identified"])
+    # db = firebase.firebase.database()
+    # db.child(date.today()).child(current_time).set(identified["identified"])
     
     return identified
     

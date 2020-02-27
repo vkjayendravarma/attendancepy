@@ -3,6 +3,7 @@ import sys
 import face_recognition
 import brain.deleteImages
 import brain.facematch
+import brain.know_face_encodings
 import appcongif
 import os , errno
 
@@ -32,18 +33,19 @@ def pull(imageList):
             appcongif.CROP_IMAGE_ID = appcongif.CROP_IMAGE_ID + 1
             temp_name = str(appcongif.CROP_IMAGE_ID) + ".jpeg" 
             cropped_image_list.append(temp_name)
-            pil_image.save(appcongif.IMAGES_UNKNOWN+"/" + temp_name)
+            pil_image.save(appcongif.IMAGES_UNKNOWN + "/" + temp_name)
 
    
 
-    brain.deleteImages.deleteImages( appcongif.IMAGES_TO_IDENTIFY, imageList)
+    # brain.deleteImages.deleteImages( appcongif.IMAGES_TO_IDENTIFY, imageList)
+    # brain.know_face_encodings.en()
     attendance_list = brain.facematch.match(cropped_image_list)
-    brain.deleteImages.deleteImages(appcongif.IMAGES_UNKNOWN, cropped_image_list)
+    # brain.deleteImages.deleteImages(appcongif.IMAGES_UNKNOWN, cropped_image_list)
     
-  
-
     
 
+    
+    # return " "
     return {"identified" : attendance_list}
 
     
