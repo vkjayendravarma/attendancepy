@@ -12,7 +12,7 @@ from datetime import date, datetime
 import pytz
 
 # Local imports
-import appcongif
+import appconfig
 import brain
 
 #init flask
@@ -30,15 +30,16 @@ db = firebase.firebase.database()
 
 
 # APP configs
-app.config["IMAGES_TO_IDENTIFY"] = appcongif.IMAGES_TO_IDENTIFY
-app.config["IMAGES_KNOWN"] = appcongif.IMAGES_KNOWN
-app.config["IMAGE_ID"] = appcongif.IMAGE_ID
+app.config["IMAGES_TO_IDENTIFY"] = appconfig.IMAGES_TO_IDENTIFY
+app.config["IMAGES_KNOWN"] = appconfig.IMAGES_KNOWN
+app.config["IMAGE_ID"] = appconfig.IMAGE_ID
 
 # Directory setup
 storage_location = app.root_path + "/" + app.config["IMAGES_TO_IDENTIFY"] 
 
-location = app.root_path + "/" + appcongif.IMAGES_UNKNOWN
-location1 = app.root_path + "/" + appcongif.IMAGES_UNIDENTIFIED
+location = app.root_path + "/" + appconfig.IMAGES_UNKNOWN
+location1 = app.root_path + "/" + appconfig.IMAGES_UNIDENTIFIED
+location2 = app.root_path + "/" + appconfig.IMAGE_ENCODINGS
 
 try:
     os.makedirs(storage_location)
@@ -52,6 +53,11 @@ except OSError as e:
         raise
 try:
     os.makedirs(location1)
+except OSError as e:
+    if e.errno != errno.EEXIST:
+        raise
+try:
+    os.makedirs(location2)
 except OSError as e:
     if e.errno != errno.EEXIST:
         raise
@@ -83,13 +89,16 @@ def uploadimage():
     
     return {"filename": filename}  #return filename as response 
     
-# process and posting attendance
+# generate encodings
 
 @app.route("/encodings", methods=["GET"])
 def encodings():
+    print("enc")
     brain.know_face_encodings.en()
     
-    return {"res": "file created"}
+    return {"res": "Encodings generated"}
+
+# process and posting attendance
   
 @app.route("/process_images", methods=["POST"])
 def process_images():
@@ -157,8 +166,6 @@ def unidentified():
             }
         else:
             err = 'No data. Guest might be updated by someone'
-    # db = firebase.firebase.database()
-    # db.child(date.today()).child(current_time).set(identified["identified"])
     
     return {"res" : res,"err" : err}
 
@@ -200,11 +207,11 @@ def newuser():
     
     # If it is to update unidentified peson 
     elif (request.form["existingID"]):
-        newfile = appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg"        
+        newfile = appconfig.IMAGES_KNOWN + "/" + str(userID) + ".jpeg"        
         guest = db.child("unidentified").child(request.form["existingID"]).get().val()
         
         if(request.form["force_override"] == 'true'):        
-            shutil.move(appcongif.IMAGES_UNIDENTIFIED + "/" + str(guest["imgID"]) + ".jpeg" ,appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg")
+            shutil.move(appconfig.IMAGES_UNIDENTIFIED + "/" + str(guest["imgID"]) + ".jpeg" ,appconfig.IMAGES_KNOWN + "/" + str(userID) + ".jpeg")
             db.child("users").child(userID).set(userName)
             db.child('attendance').child(guest["date"]).child(guest["session"]).child(userID).set(1)        
             db.child("unidentified").child(request.form["existingID"]).remove()  
@@ -212,7 +219,7 @@ def newuser():
             if(os.path.exists(newfile)):
                 err = 'file exists'
             else:
-                shutil.move(appcongif.IMAGES_UNIDENTIFIED + "/" + str(guest["imgID"]) + ".jpeg" ,appcongif.IMAGES_KNOWN + "/" + str(userID) + ".jpeg")
+                shutil.move(appconfig.IMAGES_UNIDENTIFIED + "/" + str(guest["imgID"]) + ".jpeg" ,appconfig.IMAGES_KNOWN + "/" + str(userID) + ".jpeg")
                 db.child("users").child(userID).set(userName)
                 db.child('attendance').child(guest["date"]).child(guest["session"]).child(userID).set(1)        
                 db.child("unidentified").child(request.form["existingID"]).remove()  
@@ -269,7 +276,7 @@ def delete():
     requestid = data["imgID"]
     dbr = db.child('unidentified').child(requestid).get().val()
     imref = dbr["imgID"]
-    pathref = app.root_path + "/" + appcongif.IMAGES_UNIDENTIFIED + "/" + imref + ".jpeg"
+    pathref = app.root_path + "/" + appconfig.IMAGES_UNIDENTIFIED + "/" + imref + ".jpeg"
     os.remove(pathref)
     db.child('unidentified').child(requestid).remove()  
     res = True             

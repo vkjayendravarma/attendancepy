@@ -3,11 +3,6 @@ import pyrebase
 
 
 # import firebase_admin
-# from firebase_admin import credentials
-
-# cred = credentials.Certificate("key.json")
-# firebase_admin.initialize_app(cred)
-
 
 config = {
   "apiKey": "AIzaSyACZ2HPtH6h_2zjBrttHLM9LI-oKqk94X8",
